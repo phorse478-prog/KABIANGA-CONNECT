@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --surface: #f4f9f9;
+  --ink: #153b3d;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: linear-gradient(180deg, #f1fafa 0%, #f8fbfb 45%, #f7f8f6 100%);
+  color: var(--ink);
+}
+
+::selection {
+  background: #b2ebe5;
+  color: #12494b;
+}
+
+/* Hide the mobile bottom nav's safe-area gap on iOS */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
