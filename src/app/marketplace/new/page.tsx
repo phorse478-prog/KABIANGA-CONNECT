@@ -49,12 +49,6 @@ export default function NewListingPage() {
       return;
     }
 
-    if (photos.length === 0) {
-      setError("Add at least one photo of the item.");
-      setSubmitting(false);
-      return;
-    }
-
     const { data: product, error: insertError } = await supabase
       .from("products")
       .insert({
@@ -108,7 +102,7 @@ export default function NewListingPage() {
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            Title
+            Product name
           </label>
           <input
             required
@@ -205,7 +199,7 @@ export default function NewListingPage() {
             className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-200"
           />
           <p className="mt-1 text-xs text-gray-400">
-            Up to 5 photos, 5MB each.
+            Optional. Add up to 5 photos, 5MB each.
           </p>
         </div>
 
