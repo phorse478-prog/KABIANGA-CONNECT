@@ -39,6 +39,19 @@ export default function NewListingPage() {
     setSubmitting(true);
     setError(null);
 
+    const numericPrice = Number(price);
+    if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+      setError("Enter a valid price.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (photos.length > 5 || photos.some((file) => file.size > 5 * 1024 * 1024)) {
+      setError("Choose up to 5 photos, with each photo under 5MB.");
+      setSubmitting(false);
+      return;
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -56,7 +69,7 @@ export default function NewListingPage() {
         category_id: categoryId || null,
         title,
         description,
-        price_kes: Number(price),
+        price_kes: numericPrice,
         condition,
         location,
         status: "pending", // goes live once an admin approves it
@@ -70,20 +83,30 @@ export default function NewListingPage() {
       return;
     }
 
-    for (let i = 0; i < photos.length; i++) {
-      const file = photos[i];
-      const path = `${user.id}/${product.id}/${Date.now()}-${i}-${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("product-images")
-        .upload(path, file, { upsert: false });
+    try {
+      for (let i = 0; i < photos.length; i++) {
+        const file = photos[i];
+        const path = `${user.id}/${product.id}/${Date.now()}-${i}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("product-images")
+          .upload(path, file, { upsert: false });
 
-      if (!uploadError) {
-        await supabase.from("product_images").insert({
+        if (uploadError) throw uploadError;
+
+        const { error: imageRowError } = await supabase
+          .from("product_images")
+          .insert({
           product_id: product.id,
           storage_path: path,
           sort_order: i,
-        });
+          });
+
+        if (imageRowError) throw imageRowError;
       }
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Photo upload failed.");
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);
