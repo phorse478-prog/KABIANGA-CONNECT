@@ -7,8 +7,10 @@ const links = [
   { href: "/hostels", label: "Hostels" },
   { href: "/food", label: "Food" },
   { href: "/gigs", label: "Gigs" },
+  { href: "/posts", label: "Posts" },
   { href: "/resources", label: "Resources" },
   { href: "/events", label: "Events" },
+  { href: "/lost-found", label: "Lost & Found" },
 ];
 
 export async function NavBar() {

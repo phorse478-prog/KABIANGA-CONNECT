@@ -6,6 +6,8 @@ import {
   Briefcase,
   BookOpen,
   CalendarDays,
+  MessageSquareText,
+  SearchCheck,
 } from "lucide-react";
 
 const actions = [
@@ -13,13 +15,15 @@ const actions = [
   { href: "/hostels", label: "Find Hostel", icon: HomeIcon },
   { href: "/food", label: "Order Food", icon: UtensilsCrossed },
   { href: "/gigs", label: "Find Gigs", icon: Briefcase },
+  { href: "/posts", label: "Posts", icon: MessageSquareText },
   { href: "/resources", label: "Resources", icon: BookOpen },
   { href: "/events", label: "Events", icon: CalendarDays },
+  { href: "/lost-found", label: "Lost & Found", icon: SearchCheck },
 ];
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
       {actions.map(({ href, label, icon: Icon }) => (
         <Link
           key={href}

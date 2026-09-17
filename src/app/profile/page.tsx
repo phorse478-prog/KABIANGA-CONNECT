@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/EmptyState";
 import { LogoutButton } from "@/components/LogoutButton";
+import { ProfileEditor } from "@/components/ProfileEditor";
 import { ClipboardList, MessageCircle, Bell, BookOpen, CalendarDays, ChevronRight } from "lucide-react";
 
 export default async function ProfilePage() {
@@ -16,7 +17,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, bio, is_verified, created_at")
+    .select("id, full_name, phone, bio, avatar_url, registration_number, course, campus_year, is_verified, created_at")
     .eq("id", user.id)
     .single();
 
@@ -28,9 +29,13 @@ export default async function ProfilePage() {
   return (
     <div className="mx-auto max-w-lg">
       <div className="flex items-center gap-4">
-        <div className="grid h-16 w-16 place-items-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
-          {profile?.full_name?.[0]?.toUpperCase() ?? "S"}
-        </div>
+        {profile?.avatar_url ? (
+          <img src={profile.avatar_url} alt={profile.full_name ?? "Student"} className="h-16 w-16 rounded-full object-cover" />
+        ) : (
+          <div className="grid h-16 w-16 place-items-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
+            {profile?.full_name?.[0]?.toUpperCase() ?? "S"}
+          </div>
+        )}
         <div>
           <p className="text-lg font-semibold text-gray-900">
             {profile?.full_name ?? "Student"}
@@ -51,6 +56,10 @@ export default async function ProfilePage() {
           ))}
         </div>
       )}
+
+      <div className="mt-6">
+        <ProfileEditor profile={profile ?? null} />
+      </div>
 
       <div className="mt-8 space-y-1 md:hidden">
         {[

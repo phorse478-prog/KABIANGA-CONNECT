@@ -22,6 +22,8 @@ create table profiles (
   full_name text not null,
   phone text,
   avatar_url text,
+  registration_number text,
+  course text,
   campus_year text,
   bio text,
   is_verified boolean not null default false,
@@ -300,6 +302,33 @@ create table favorites (
   primary key (user_id, target_type, target_id)
 );
 
+create table posts (
+  id uuid primary key default uuid_generate_v4(),
+  author_id uuid not null references profiles(id) on delete cascade,
+  body text not null,
+  created_at timestamptz not null default now()
+);
+create index posts_author_idx on posts(author_id);
+create index posts_created_idx on posts(created_at desc);
+
+create table post_likes (
+  id uuid primary key default uuid_generate_v4(),
+  post_id uuid not null references posts(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (post_id, user_id)
+);
+create index post_likes_post_idx on post_likes(post_id);
+
+create table post_comments (
+  id uuid primary key default uuid_generate_v4(),
+  post_id uuid not null references posts(id) on delete cascade,
+  author_id uuid not null references profiles(id) on delete cascade,
+  body text not null,
+  created_at timestamptz not null default now()
+);
+create index post_comments_post_idx on post_comments(post_id);
+
 create table notifications (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid not null references profiles(id) on delete cascade,
@@ -429,6 +458,9 @@ alter table messages enable row level security;
 alter table resources enable row level security;
 alter table events enable row level security;
 alter table favorites enable row level security;
+alter table posts enable row level security;
+alter table post_likes enable row level security;
+alter table post_comments enable row level security;
 alter table notifications enable row level security;
 alter table payments enable row level security;
 alter table commissions enable row level security;
@@ -622,6 +654,18 @@ create policy "Organizers manage their own events" on events
 
 -- FAVORITES
 create policy "Users manage their own favorites" on favorites for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- SOCIAL POSTS
+create policy "Posts are publicly viewable" on posts for select using (true);
+create policy "Users can create posts" on posts for insert with check (auth.uid() = author_id);
+create policy "Users can delete their own posts" on posts for delete using (auth.uid() = author_id or is_admin());
+
+create policy "Post likes are publicly viewable" on post_likes for select using (true);
+create policy "Users can manage their own likes" on post_likes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "Post comments are publicly viewable" on post_comments for select using (true);
+create policy "Users can create comments" on post_comments for insert with check (auth.uid() = author_id);
+create policy "Users can delete their own comments" on post_comments for delete using (auth.uid() = author_id or is_admin());
 
 -- NOTIFICATIONS
 create policy "Users view their own notifications" on notifications for select using (auth.uid() = user_id);

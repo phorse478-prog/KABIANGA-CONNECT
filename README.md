@@ -107,6 +107,25 @@ tables for it already exist (see below).
    npm run dev
    ```
 
+## Vercel environments
+
+Import the repository into Vercel and keep the default Next.js framework
+settings. Add these variables under **Project Settings -> Environment
+Variables**:
+
+| Variable | Development | Preview | Production |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | same project URL | same project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/publishable key | same key | same key |
+| `NEXT_PUBLIC_SITE_NAME` | `Kabianga Connect` | `Kabianga Connect` | `Kabianga Connect` |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Vercel preview URL | production domain URL |
+| `NEXT_PUBLIC_SITE_PUBLISHABLE_KEY` | publishable key, if used | same key | same key |
+
+Only add `SUPABASE_SERVICE_ROLE_KEY` to Vercel when a server-only action
+requires it, and scope it to the environments that need it. Never prefix
+this variable with `NEXT_PUBLIC_`. After changing variables, redeploy so
+the new values are available to the build and server functions.
+
 ## What's built (Phase 1)
 
 - [x] Email/password auth (register with role selection, login, logout)
