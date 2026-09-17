@@ -10,7 +10,7 @@ interface CategoryOption {
 }
 
 export default function NewListingPage() {
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const router = useRouter();
 
   const [categories, setCategories] = useState<CategoryOption[]>([]);
