@@ -36,7 +36,11 @@ function LoginForm() {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      setError(
+        error.status === 429
+          ? "Too many attempts. Please wait before trying again, then use Reset password if needed."
+          : error.message
+      );
       return;
     }
 

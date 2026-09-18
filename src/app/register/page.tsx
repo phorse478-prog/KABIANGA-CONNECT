@@ -48,7 +48,11 @@ export default function RegisterPage() {
 
     if (signUpError) {
       setLoading(false);
-      setError(signUpError.message);
+      setError(
+        signUpError.status === 429
+          ? "Email sending is temporarily rate-limited. Please wait before creating another account."
+          : signUpError.message
+      );
       return;
     }
 
