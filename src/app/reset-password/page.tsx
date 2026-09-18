@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -9,13 +9,28 @@ function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  const hasToken = Boolean(searchParams.get("token") && searchParams.get("type"));
+  const [hasToken, setHasToken] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const recoveryHash = window.location.hash.includes("type=recovery");
+    if (recoveryHash) {
+      setHasToken(true);
+    }
+
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setHasToken(true);
+      }
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, [supabase]);
 
   async function handleRequestReset(e: React.FormEvent) {
     e.preventDefault();

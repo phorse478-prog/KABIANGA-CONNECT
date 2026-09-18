@@ -36,7 +36,7 @@ function LoginForm() {
     setLoading(false);
 
     if (error) {
-      setError("Incorrect email or password. Please try again.");
+      setError(error.message);
       return;
     }
 
